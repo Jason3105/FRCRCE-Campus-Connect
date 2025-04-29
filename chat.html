@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRCRCE Campus Connect</title>
+    <style>
+/* Base Theme Colors */
+:root {
+    --primary-purple: #7e57c2;
+    --light-purple: #b085f5;
+    --secondary-color: #5e35b1;
+    --background-light: #f5f0ff;
+    --white: #ffffff;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Chatbot Container */
+#chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Toggle Button */
+#chat-toggle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+#chat-toggle-btn:hover {
+    transform: scale(1.05);
+    background-color: var(--secondary-color);
+}
+
+#chat-toggle-icon {
+    color: var(--white);
+    font-size: 24px;
+}
+
+/* Chat Window */
+#chat-window {
+    width: 350px;
+    height: 500px;
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px var(--shadow);
+    margin-bottom: 15px;
+    display: none;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+#chat-window.active {
+    display: flex;
+}
+
+/* Chat Header */
+#chat-header {
+    background-color: var(--primary-purple);
+    color: var(--white);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chat-title {
+    font-weight: 600;
+    margin: 0;
+    font-size: 16px;
+}
+
+#language-selector {
+    background-color: transparent;
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+}
+
+#language-selector option {
+    background-color: var(--white);
+    color: var(--text-dark);
+}
+
+/* Chat Messages Area */
+#chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: var(--background-light);
+}
+
+.message {
+    margin-bottom: 12px;
+    max-width: 80%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    line-height: 1.4;
+    font-size: 14px;
+    position: relative;
+}
+
+.user-message {
+    background-color: var(--primary-purple);
+    color: var(--white);
+    margin-left: auto;
+    border-bottom-right-radius: 2px;
+}
+
+.bot-message {
+    background-color: var(--white);
+    color: var(--text-dark);
+    margin-right: auto;
+    border-bottom-left-radius: 2px;
+    border-left: 3px solid var(--light-purple);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.typing-indicator {
+    padding: 8px 16px;
+    border-left: 3px solid var(--light-purple);
+}
+
+.typing-indicator span {
+    height: 4px;
+    width: 4px;
+    background-color: var(--text-light);
+    display: inline-block;
+    border-radius: 50%;
+    animation: typingAnimation 1.5s infinite ease-in-out;
+    margin: 0 2px;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingAnimation {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+}
+
+/* Input Area */
+#chat-input-container {
+    display: flex;
+    padding: 10px;
+    background-color: var(--white);
+    border-top: 1px solid #eee;
+}
+
+#chat-input {
+    flex: 1;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 8px 15px;
+    outline: none;
+    font-size: 14px;
+}
+
+#chat-input:focus {
+    border-color: var(--light-purple);
+}
+
+#send-button {
+    background-color: var(--primary-purple);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    margin-left: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+#send-button:hover {
+    background-color: var(--secondary-color);
+}
+    </style>
+</head>
+<body>
+    <!-- Chatbot Widget -->
+<div id="chatbot-container">
+    <!-- Chat Window -->
+    <div id="chat-window">
+        <div id="chat-header">
+            <h3 id="chat-title">FRCRCE Campus Connect</h3>
+            <select id="language-selector" class="language-select">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="mr">मराठी</option>
+            </select>
+        </div>
+        <div id="chat-messages" class="messages"></div>
+        <div id="chat-input-container">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Ask about events, councils, etc...">
+            <button id="send-button" class="send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Chat Toggle Button -->
+    <div id="chat-toggle-btn">
+        <div id="chat-toggle-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15z"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+    <script>
+// Gemini API Configuration
+const GEMINI_API_KEY = 'AIzaSyAj9NCp0-9909MPLfds93gsO_gANOITjQQ';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+
+// DOM Elements
+const chatToggleBtn = document.getElementById('chat-toggle-btn');
+const chatWindow = document.getElementById('chat-window');
+const chatInput = document.getElementById('chat-input');
+const sendButton = document.getElementById('send-button');
+const messagesContainer = document.getElementById('chat-messages');
+const languageSelect = document.getElementById('language-selector');
+
+// Train the model for FRCRCE Campus Connect
+const CAMPUS_CONNECT_CONTEXT = `You are FRCRCE Campus Connect AI, an assistant designed to help students of Fr. Conceicao Rodrigues College of Engineering with information about college events, councils, registration processes, and other campus activities.
+
+Follow these guidelines:
+- Provide helpful, accurate information about FRCRCE college events, councils, registration processes, and campus activities
+- Help students navigate the Campus Connect platform to register for events, view galleries, form teams, and access other features
+- Answer questions about upcoming events, event schedules, council activities, and registration deadlines
+- Assist with basic troubleshooting for website features
+- When uncertain, acknowledge limitations and suggest contacting the relevant council or checking the official college website`;
+
+// Active language (default: English)
+let activeLanguage = 'en';
+
+// Initialize the chat
+function initChat() {
+    // Toggle chat window visibility
+    chatToggleBtn.addEventListener('click', () => {
+        chatWindow.classList.toggle('active');
+        if (chatWindow.classList.contains('active')) {
+            chatInput.focus();
+            // If this is first open, show welcome message
+            if (messagesContainer.childElementCount === 0) {
+                addBotMessage("Hi there! I'm your FRCRCE Campus Connect assistant. I can help you with event registrations, council information, and campus activities. How can I assist you today?");
+            }
+        }
+    });
+
+    // Language selection event
+    languageSelect.addEventListener('change', (e) => {
+        activeLanguage = e.target.value;
+        // Add a system message about language change
+        addBotMessage(`I've switched to ${getLanguageName(activeLanguage)}. How can I help you?`);
+    });
+
+    // Send message events
+    sendButton.addEventListener('click', handleSendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleSendMessage();
+        }
+    });
+}
+
+// Maps language codes to full names
+function getLanguageName(code) {
+    const languages = {
+        'en': 'English',
+        'hi': 'Hindi',
+        'mr': 'Marathi'
+    };
+    return languages[code] || 'English';
+}
+
+// Handle sending a message
+function handleSendMessage() {
+    const message = chatInput.value.trim();
+    if (message.length === 0) return;
+    
+    // Add user message to chat
+    addUserMessage(message);
+    
+    // Clear input field
+    chatInput.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Get response from AI
+    getAIResponse(message);
+}
+
+// Add a user message to the chat
+function addUserMessage(message) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', 'user-message');
+    messageElement.textContent = message;
+    messagesContainer.appendChild(messageElement);
+    scrollToBottom();
+}
+
+// Add a bot message to the chat
+function addBotMessage(message) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', 'bot-message');
+    messageElement.textContent = message;
+    messagesContainer.appendChild(messageElement);
+    scrollToBottom();
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+    const typingElement = document.createElement('div');
+    typingElement.classList.add('message', 'bot-message', 'typing-indicator');
+    typingElement.innerHTML = '<span></span><span></span><span></span>';
+    typingElement.id = 'typing-indicator';
+    messagesContainer.appendChild(typingElement);
+    scrollToBottom();
+}
+
+// Remove typing indicator
+function removeTypingIndicator() {
+    const typingElement = document.getElementById('typing-indicator');
+    if (typingElement) {
+        typingElement.remove();
+    }
+}
+
+// Scroll chat to bottom
+function scrollToBottom() {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Get AI response from Gemini API
+async function getAIResponse(userMessage) {
+    try {
+        // Create prompt based on active language
+        let languageInstruction = '';
+        if (activeLanguage !== 'en') {
+            languageInstruction = `Please respond in ${getLanguageName(activeLanguage)}.`;
+        }
+
+        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: `${CAMPUS_CONNECT_CONTEXT}\n\n${languageInstruction}\n\nUser query: ${userMessage}\n\nAdditional context: The website FRCRCE Campus Connect helps students register for events, view galleries, join councils, and form teams for college activities at Fr. Conceicao Rodrigues College of Engineering. There are over 50+ events happening this month.`
+                    }]
+                }]
+            })
+        });
+
+        const data = await response.json();
+        
+        // Remove typing indicator
+        removeTypingIndicator();
+        
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            const aiResponse = data.candidates[0].content.parts[0].text;
+            addBotMessage(aiResponse);
+        } else {
+            // Handle API error
+            addBotMessage("I'm having trouble connecting right now. Please try again later or reach out to the Campus Connect support team.");
+            console.error("API Response Error:", data);
+        }
+    } catch (error) {
+        // Remove typing indicator
+        removeTypingIndicator();
+        
+        // Handle error
+        addBotMessage("I'm having trouble connecting right now. Please try again later or reach out to the Campus Connect support team.");
+        console.error("API Error:", error);
+    }
+}
+
+// Initialize chat when DOM is loaded
+document.addEventListener('DOMContentLoaded', initChat);
+    </script>
+</body>
+</html>
