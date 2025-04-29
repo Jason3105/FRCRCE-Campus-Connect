@@ -3,7 +3,7 @@
 CampusConnect is a comprehensive platform designed to connect students with campus events, student councils, and activities. It provides a centralized hub for discovering, registering, and participating in exciting events organized by various student councils across campus.  
 
 ## 🚀 Live Demo  
-[Click here to try CampusConnect]([https://collegeportal-yake.onrender.com/](https://frcrcecampusconnect.onrender.com/))  
+[Click here to try CampusConnect](https://frcrcecampusconnect.onrender.com/)  
 
 ## 📹 YouTube Demo
 [![Watch the Demo](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
