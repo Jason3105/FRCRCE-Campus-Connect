@@ -124,7 +124,7 @@ FRCRCE-Campus-Connect/
 ![Home Page](Images/home.png)  
 ![Event Listings](Images/events.png)  
 ![User Profile](Images/dashboard.png)  
-![Council Details](Images/college.png)  
+![College About Us](Images/college.png)  
 ![MongoDB Database](Images/mongodb.png)  
 ![MongoDB Atlas](Images/mongodb_atlas.png)  
    
