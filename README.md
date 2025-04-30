@@ -6,7 +6,7 @@ CampusConnect is a comprehensive platform designed to connect students with camp
 [Click here to try CampusConnect](https://frcrcecampusconnect.onrender.com/)  
 
 ## 📹 YouTube Demo
-[![Watch the Demo](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+[![Watch the video](https://img.youtube.com/vi/oT7BAEwRxlk/maxresdefault.jpg)](https://youtu.be/oT7BAEwRxlk)  
 
 ## ✨ Features
 
